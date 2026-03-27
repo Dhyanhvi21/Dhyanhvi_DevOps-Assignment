@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        PATH = "/var/lib/jenkins/.local/bin:${env.PATH}"
+    }
+
     stages {
 
         stage('Install Dependencies') {
@@ -12,14 +16,12 @@ pipeline {
 
         stage('Lint') {
             steps {
-                sh 'pip3 install pylint --break-system-packages'
                 sh 'pylint app || true'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'pip3 install pytest --break-system-packages'
                 sh 'pytest'
             }
         }
