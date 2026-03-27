@@ -5,21 +5,22 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'docker run --rm -v $PWD:/app -w /app python:3.12 pip install -r requirements.txt'
+                sh 'python3 -m pip install --upgrade pip'
+                sh 'pip3 install -r requirements.txt'
             }
         }
 
         stage('Lint') {
             steps {
-                sh 'docker run --rm -v $PWD:/app -w /app python:3.12 pip install pylint'
-                sh 'docker run --rm -v $PWD:/app -w /app python:3.12 pylint app || true'
+                sh 'pip3 install pylint'
+                sh 'pylint app || true'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'docker run --rm -v $PWD:/app -w /app python:3.12 pip install pytest'
-                sh 'docker run --rm -v $PWD:/app -w /app python:3.12 pytest'
+                sh 'pip3 install pytest'
+                sh 'pytest'
             }
         }
 
@@ -31,7 +32,9 @@ pipeline {
 
         stage('Run Container') {
             steps {
-                sh 'docker run -d -p 5000:5000 devops-flask-app || true'
+                sh 'docker stop flask-container || true'
+                sh 'docker rm flask-container || true'
+                sh 'docker run -d -p 5000:5000 --name flask-container devops-flask-app'
             }
         }
 
